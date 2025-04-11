@@ -1,6 +1,6 @@
 <?php
+require_once '../config/conexion.php';
 
-include 'conexion.php';
 
 $nombre = $_POST['nombre'];
 $fecha_nacimiento = $_POST['fecha_nacimiento'];

@@ -1,5 +1,12 @@
 <?php
+class DeleteController {
+    public function deleteRecord($conexion, $id) {
+        $sql = "DELETE FROM aprendices WHERE id = $id";
+        return mysqli_query($conexion, $sql);
+    }
+}
 
+$deleteController = new DeleteController();
 include 'conexion.php';
 $id = $_GET['id'];
 

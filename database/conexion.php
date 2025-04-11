@@ -1,18 +1,27 @@
 <?php
 
-$server = "localhost";
-$database = "prueba_db";
-$usuario = "root";
-$contrasenia = "";
+class Conexion {
+    private $server;
+    private $database;
+    private $usuario;
+    private $contrasenia;
+    public $conexion;
 
-$conexion = mysqli_connect($server, $usuario, $contrasenia, $database);
-
-try {
-    if (!$conexion) {
-        throw new Exception("Error de conexión: " . mysqli_connect_error());
-    } else {
-        // echo "Conexión exitosa a la base de datos.";
+    public function __construct($server, $database, $usuario, $contrasenia) {
+        $this->server = $server;
+        $this->database = $database;
+        $this->usuario = $usuario;
+        $this->contrasenia = $contrasenia;
+        $this->conectar();
     }
-} catch (Exception $e) {
-    echo $e->getMessage();
+
+    public function conectar() {
+        try {
+            $dsn = "mysql:host={$this->server};dbname={$this->database};charset=utf8mb4";
+            $this->conexion = new PDO($dsn, $this->usuario, $this->contrasenia);
+            $this->conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            throw new Exception("Error de conexión: " . $e->getMessage());
+        }
+    }
 }

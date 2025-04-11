@@ -29,36 +29,43 @@
                         </thead>
                         <tbody>
                             <?php
-                            include 'conexion.php';
-                            $sql = "SELECT * FROM aprendices";
-                            $resultado = mysqli_query($conexion, $sql);
-                            $contador = 1;
+                            require_once 'database/conexion.php';
 
-                            while ($row = mysqli_fetch_array($resultado)) {
-                                $id = $row['id'];
-                                $nombre = $row['nombre'];
-                                $fecha_nacimiento = $row['fecha_nacimiento'];
-                                $obj = new DateTime($fecha_nacimiento);
-                                $hoy = new DateTime();
-                                $edad = $hoy->diff($obj)->y; // Calcular la edad
-
-                                echo "<tr class='text-center'>";
-                                echo "<th scope='row'>$contador</th>";
-                                echo "<td>$nombre</td>";
-                                echo "<td>$edad años</td>";
-                                echo "<td>";
-                                echo "<a href='ver.php?id=$id&nombre=$nombre' class='btn btn-info btn-sm'>Ver</a>";
-                                echo "</td>";
-                                echo "<td>";
-                                echo "<a href='editar.php?id=$id' class='btn btn-warning btn-sm'>Editar</a>";
-                                echo "</td>";
-                                echo "<td>";
-                                echo "<a href='delete.php?id=$id' class='btn btn-danger btn-sm'>Eliminar</a>";
-                                echo "</td>";
-                                echo "</tr>";
-                                $contador++;
+                            try {
+                                $db = new Conexion("localhost", "prueba_db", "root", "");
+                                $conexion = $db->conexion;
+                            
+                                $sql = "SELECT * FROM aprendices";
+                                $stmt = $conexion->prepare($sql);
+                                $stmt->execute();
+                                $resultado = $stmt->fetchAll();
+                            
+                                $contador = 1;
+                            
+                                foreach ($resultado as $row) {
+                                    $id = $row['id'];
+                                    $nombre = $row['primer_nombre'];
+                                    $fecha_nacimiento = $row['fecha_nacimiento'];
+                                    $obj = new DateTime($fecha_nacimiento);
+                                    $hoy = new DateTime();
+                                    $edad = $hoy->diff($obj)->y;
+                            
+                                    echo "<tr class='text-center'>";
+                                    echo "<th scope='row'>$contador</th>";
+                                    echo "<td>$nombre</td>";
+                                    echo "<td>$edad años</td>";
+                                    echo "<td><a href='ver.php?id=$id&nombre=$nombre' class='btn btn-info btn-sm'>Ver</a></td>";
+                                    echo "<td><a href='editar.php?id=$id' class='btn btn-warning btn-sm'>Editar</a></td>";
+                                    echo "<td><a href='delete.php?id=$id' class='btn btn-danger btn-sm'>Eliminar</a></td>";
+                                    echo "</tr>";
+                            
+                                    $contador++;
+                                }
+                            
+                            } catch (Exception $e) {
+                                echo $e->getMessage();
                             }
-                            mysqli_close($conexion);
+                            
                             ?>
                         </tbody>
                     </table>
