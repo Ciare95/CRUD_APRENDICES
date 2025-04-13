@@ -1,3 +1,6 @@
+<?php
+require_once 'database/conexion.php';
+?>
 <!doctype html>
 <html lang="es">
 
@@ -15,57 +18,70 @@
                 <div class="col">
                     <h1 class="text-center">Lista de Aprendices</h1>
                     <div class="text-center mb-3">
-                        <a href="crear.php" class="btn btn-sm btn-primary">Crear Aprendiz</a>
+                        <a href="view/aprendiz/crear.php" class="btn btn-sm btn-primary">Crear Aprendiz</a>
                     </div>
 
                     <table class="table table-sm table-hover table-responsive">
                         <thead>
                             <tr class="text-center">
                                 <th scope="col">No.</th>
-                                <th scope="col">Nombre</th>
+                                <th scope="col">Nombre Completo</th>
                                 <th scope="col">Edad</th>
                                 <th colspan="3" scope="col">Opciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                            require_once 'database/conexion.php';
-
                             try {
-                                $db = new Conexion("localhost", "prueba_db", "root", "");
+                                $db = new Conexion();
                                 $conexion = $db->conexion;
                             
-                                $sql = "SELECT * FROM aprendices";
+                                $sql = "SELECT a.id, 
+                                              p.primer_nombre, 
+                                              p.segundo_nombre, 
+                                              p.primer_apellido, 
+                                              p.segundo_apellido,
+                                              p.fecha_nacimiento
+                                       FROM aprendices a
+                                       INNER JOIN personas p ON a.persona_id = p.id";
+                                
                                 $stmt = $conexion->prepare($sql);
                                 $stmt->execute();
-                                $resultado = $stmt->fetchAll();
+                                $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             
                                 $contador = 1;
                             
                                 foreach ($resultado as $row) {
-                                    $id = $row['id'];
-                                    $nombre = $row['primer_nombre'];
-                                    $fecha_nacimiento = $row['fecha_nacimiento'];
-                                    $obj = new DateTime($fecha_nacimiento);
-                                    $hoy = new DateTime();
-                                    $edad = $hoy->diff($obj)->y;
-                            
-                                    echo "<tr class='text-center'>";
-                                    echo "<th scope='row'>$contador</th>";
-                                    echo "<td>$nombre</td>";
-                                    echo "<td>$edad años</td>";
-                                    echo "<td><a href='ver.php?id=$id&nombre=$nombre' class='btn btn-info btn-sm'>Ver</a></td>";
-                                    echo "<td><a href='editar.php?id=$id' class='btn btn-warning btn-sm'>Editar</a></td>";
-                                    echo "<td><a href='delete.php?id=$id' class='btn btn-danger btn-sm'>Eliminar</a></td>";
-                                    echo "</tr>";
-                            
-                                    $contador++;
+                                    if (isset($row['id']) && isset($row['primer_nombre']) && isset($row['fecha_nacimiento'])) {
+                                        $id = $row['id'];
+                                        
+                                        // Construir nombre completo
+                                        $nombre = $row['primer_nombre'];
+                                        if (!empty($row['segundo_nombre'])) $nombre .= " " . $row['segundo_nombre'];
+                                        $nombre .= " " . $row['primer_apellido'];
+                                        if (!empty($row['segundo_apellido'])) $nombre .= " " . $row['segundo_apellido'];
+                                        
+                                        // Calcular edad
+                                        $fecha_nac = new DateTime($row['fecha_nacimiento']);
+                                        $hoy = new DateTime();
+                                        $edad = $hoy->diff($fecha_nac)->y;
+                                
+                                        echo "<tr class='text-center'>";
+                                        echo "<th scope='row'>$contador</th>";
+                                        echo "<td>$nombre</td>";
+                                        echo "<td>$edad años</td>";
+                                        echo "<td><a href='view/aprendiz/ver.php?id=$id' class='btn btn-info btn-sm'>Ver</a></td>";
+                                        echo "<td><a href='view/aprendiz/editar.php?id=$id' class='btn btn-warning btn-sm'>Editar</a></td>";
+                                        echo "<td><a href='controller/AprendizController.php?action=eliminar&id=$id' class='btn btn-danger btn-sm'>Eliminar</a></td>";
+                                        echo "</tr>";
+                                
+                                        $contador++;
+                                    }
                                 }
                             
                             } catch (Exception $e) {
-                                echo $e->getMessage();
+                                echo "<tr><td colspan='6' class='text-center text-danger'>Error: " . $e->getMessage() . "</td></tr>";
                             }
-                            
                             ?>
                         </tbody>
                     </table>
@@ -73,7 +89,6 @@
             </div>
         </div>
     </div>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
 </body>

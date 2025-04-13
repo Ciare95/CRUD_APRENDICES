@@ -7,13 +7,14 @@ class Conexion {
     private $contrasenia;
     public $conexion;
 
-    public function __construct($server, $database, $usuario, $contrasenia) {
+    public function __construct($server = "localhost", $database = "prueba_db", $usuario = "root", $contrasenia = "") {
         $this->server = $server;
         $this->database = $database;
         $this->usuario = $usuario;
         $this->contrasenia = $contrasenia;
         $this->conectar();
     }
+    
 
     public function conectar() {
         try {
