@@ -10,6 +10,22 @@ class AprendizModel {
         $this->conexion = $db->conexion;
     }
 
+    /**
+     * Obtiene el persona_id de un aprendiz
+     */
+    private function obtener_id_usuario($id) {
+        $sql = "SELECT persona_id FROM aprendices WHERE id = :id";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $aprendiz = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$aprendiz) {
+            throw new Exception("Aprendiz no encontrado");
+        }
+
+        return $aprendiz['persona_id'];
+    }
+
     public function crear($datos) {
         try {
             $this->conexion->beginTransaction();
@@ -95,15 +111,8 @@ class AprendizModel {
         try {
             $this->conexion->beginTransaction();
 
-            // Primero obtenemos el persona_id del aprendiz
-            $sql_get_persona = "SELECT persona_id FROM aprendices WHERE id = :id";
-            $stmt = $this->conexion->prepare($sql_get_persona);
-            $stmt->execute(['id' => $id]);
-            $aprendiz = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$aprendiz) {
-                throw new Exception("Aprendiz no encontrado");
-            }
+            // Obtenemos el persona_id usando la función reutilizable
+            $persona_id = $this->obtener_id_usuario($id);
 
             // Actualizamos la tabla personas
             $sql_persona = "UPDATE personas SET 
@@ -129,7 +138,7 @@ class AprendizModel {
                 ':sexo_id' => $datos['sexo_id'],
                 ':grupo_sanguineo_id' => empty($datos['grupo_sanguineo_id']) ? null : $datos['grupo_sanguineo_id'],
                 ':fecha_nacimiento' => $datos['fecha_nacimiento'],
-                ':persona_id' => $aprendiz['persona_id']
+                ':persona_id' => $persona_id
             ]);
 
             // Actualizamos la tabla aprendices
@@ -158,15 +167,8 @@ class AprendizModel {
         try {
             $this->conexion->beginTransaction();
 
-            // Primero obtenemos el persona_id del aprendiz
-            $sql_get_persona = "SELECT persona_id FROM aprendices WHERE id = :id";
-            $stmt = $this->conexion->prepare($sql_get_persona);
-            $stmt->execute(['id' => $id]);
-            $aprendiz = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$aprendiz) {
-                throw new Exception("Aprendiz no encontrado");
-            }
+            // Obtenemos el persona_id usando la función reutilizable
+            $persona_id = $this->obtener_id_usuario($id);
 
             // Primero eliminamos el registro de la tabla aprendices
             $sql_delete_aprendiz = "DELETE FROM aprendices WHERE id = :id";
@@ -176,7 +178,7 @@ class AprendizModel {
             // Luego eliminamos el registro de la tabla personas
             $sql_delete_persona = "DELETE FROM personas WHERE id = :persona_id";
             $stmt = $this->conexion->prepare($sql_delete_persona);
-            $stmt->execute(['persona_id' => $aprendiz['persona_id']]);
+            $stmt->execute(['persona_id' => $persona_id]);
 
             $this->conexion->commit();
             return ['status' => 'success', 'message' => 'Aprendiz eliminado exitosamente'];
