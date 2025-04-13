@@ -1,5 +1,6 @@
 <?php
-require_once '../database/conexion.php';
+require_once __DIR__ . '/../config/config.php';
+require_once BASE_PATH . '/database/conexion.php';
 
 class AprendizModel {
     private $conexion;
@@ -59,6 +60,34 @@ class AprendizModel {
         } catch (PDOException $e) {
             $this->conexion->rollBack();
             return ['status' => 'error', 'message' => 'Error al crear el aprendiz: ' . $e->getMessage()];
+        }
+    }
+
+    public function obtenerDetalles($id) {
+        try {
+            $sql = "SELECT 
+                p.primer_nombre, p.segundo_nombre, p.primer_apellido, p.segundo_apellido,
+                p.numero_documento, p.fecha_nacimiento,
+                td.nombre as tipo_documento, td.descripcion as tipo_documento_descripcion,
+                s.descripcion as sexo,
+                gs.grupo as grupo_sanguineo,
+                pf.nombre as programa_formacion,
+                a.numero_ficha
+            FROM aprendices a
+            INNER JOIN personas p ON a.persona_id = p.id
+            INNER JOIN tipo_documento td ON p.tipo_documento_id = td.id
+            INNER JOIN sexo s ON p.sexo_id = s.id
+            LEFT JOIN grupo_sanguineo gs ON p.grupo_sanguineo_id = gs.id
+            INNER JOIN programa_formacion pf ON a.programa_formacion_id = pf.id
+            WHERE a.id = :id";
+
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['error' => 'Error al obtener los detalles del aprendiz: ' . $e->getMessage()];
         }
     }
 } 
