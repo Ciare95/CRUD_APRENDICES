@@ -153,4 +153,37 @@ class AprendizModel {
             return ['status' => 'error', 'message' => 'Error al actualizar el aprendiz: ' . $e->getMessage()];
         }
     }
+
+    public function eliminar($id) {
+        try {
+            $this->conexion->beginTransaction();
+
+            // Primero obtenemos el persona_id del aprendiz
+            $sql_get_persona = "SELECT persona_id FROM aprendices WHERE id = :id";
+            $stmt = $this->conexion->prepare($sql_get_persona);
+            $stmt->execute(['id' => $id]);
+            $aprendiz = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$aprendiz) {
+                throw new Exception("Aprendiz no encontrado");
+            }
+
+            // Primero eliminamos el registro de la tabla aprendices
+            $sql_delete_aprendiz = "DELETE FROM aprendices WHERE id = :id";
+            $stmt = $this->conexion->prepare($sql_delete_aprendiz);
+            $stmt->execute(['id' => $id]);
+
+            // Luego eliminamos el registro de la tabla personas
+            $sql_delete_persona = "DELETE FROM personas WHERE id = :persona_id";
+            $stmt = $this->conexion->prepare($sql_delete_persona);
+            $stmt->execute(['persona_id' => $aprendiz['persona_id']]);
+
+            $this->conexion->commit();
+            return ['status' => 'success', 'message' => 'Aprendiz eliminado exitosamente'];
+
+        } catch (Exception $e) {
+            $this->conexion->rollBack();
+            return ['status' => 'error', 'message' => 'Error al eliminar el aprendiz: ' . $e->getMessage()];
+        }
+    }
 } 

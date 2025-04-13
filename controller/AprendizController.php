@@ -32,13 +32,26 @@ class AprendizController {
 
         return $this->modelo->actualizar($id, $datos);
     }
+
+    public function eliminar($id) {
+        if (!is_numeric($id)) {
+            return [
+                'status' => 'error',
+                'message' => 'ID inválido'
+            ];
+        }
+        return $this->modelo->eliminar($id);
+    }
 }
 
 // Manejo de las peticiones
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $controller = new AprendizController();
+if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) || 
+    ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']))) {
     
-    switch ($_POST['action']) {
+    $controller = new AprendizController();
+    $action = $_POST['action'] ?? $_GET['action'];
+    
+    switch ($action) {
         case 'crear':
             // Validar campos requeridos
             $campos_requeridos = [
@@ -80,6 +93,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 header('Location: ../index.php?mensaje=actualizado');
             } else {
                 header('Location: ../view/aprendiz/editar.php?id=' . $_POST['id'] . '&error=' . urlencode($resultado['message']));
+            }
+            break;
+            
+        case 'eliminar':
+            if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+                header('Location: ../index.php?error=id_invalido');
+                exit;
+            }
+
+            $resultado = $controller->eliminar($_GET['id']);
+            
+            if ($resultado['status'] === 'success') {
+                header('Location: ../index.php?mensaje=eliminado');
+            } else {
+                header('Location: ../index.php?error=' . urlencode($resultado['message']));
             }
             break;
             
