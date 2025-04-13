@@ -90,4 +90,67 @@ class AprendizModel {
             return ['error' => 'Error al obtener los detalles del aprendiz: ' . $e->getMessage()];
         }
     }
+
+    public function actualizar($id, $datos) {
+        try {
+            $this->conexion->beginTransaction();
+
+            // Primero obtenemos el persona_id del aprendiz
+            $sql_get_persona = "SELECT persona_id FROM aprendices WHERE id = :id";
+            $stmt = $this->conexion->prepare($sql_get_persona);
+            $stmt->execute(['id' => $id]);
+            $aprendiz = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$aprendiz) {
+                throw new Exception("Aprendiz no encontrado");
+            }
+
+            // Actualizamos la tabla personas
+            $sql_persona = "UPDATE personas SET 
+                primer_nombre = :primer_nombre,
+                segundo_nombre = :segundo_nombre,
+                primer_apellido = :primer_apellido,
+                segundo_apellido = :segundo_apellido,
+                tipo_documento_id = :tipo_documento_id,
+                numero_documento = :numero_documento,
+                sexo_id = :sexo_id,
+                grupo_sanguineo_id = :grupo_sanguineo_id,
+                fecha_nacimiento = :fecha_nacimiento
+                WHERE id = :persona_id";
+
+            $stmt_persona = $this->conexion->prepare($sql_persona);
+            $stmt_persona->execute([
+                ':primer_nombre' => $datos['primer_nombre'],
+                ':segundo_nombre' => $datos['segundo_nombre'],
+                ':primer_apellido' => $datos['primer_apellido'],
+                ':segundo_apellido' => $datos['segundo_apellido'],
+                ':tipo_documento_id' => $datos['tipo_documento_id'],
+                ':numero_documento' => $datos['numero_documento'],
+                ':sexo_id' => $datos['sexo_id'],
+                ':grupo_sanguineo_id' => empty($datos['grupo_sanguineo_id']) ? null : $datos['grupo_sanguineo_id'],
+                ':fecha_nacimiento' => $datos['fecha_nacimiento'],
+                ':persona_id' => $aprendiz['persona_id']
+            ]);
+
+            // Actualizamos la tabla aprendices
+            $sql_aprendiz = "UPDATE aprendices SET 
+                programa_formacion_id = :programa_formacion_id,
+                numero_ficha = :numero_ficha
+                WHERE id = :id";
+
+            $stmt_aprendiz = $this->conexion->prepare($sql_aprendiz);
+            $stmt_aprendiz->execute([
+                ':programa_formacion_id' => $datos['programa_formacion_id'],
+                ':numero_ficha' => $datos['numero_ficha'],
+                ':id' => $id
+            ]);
+
+            $this->conexion->commit();
+            return ['status' => 'success', 'message' => 'Aprendiz actualizado exitosamente'];
+
+        } catch (Exception $e) {
+            $this->conexion->rollBack();
+            return ['status' => 'error', 'message' => 'Error al actualizar el aprendiz: ' . $e->getMessage()];
+        }
+    }
 } 
