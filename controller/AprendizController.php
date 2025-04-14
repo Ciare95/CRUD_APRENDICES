@@ -9,7 +9,30 @@ class AprendizController {
         $this->modelo = new AprendizModel();
     }
 
+    private function validarEdadYDocumento($fecha_nacimiento, $tipo_documento_id) {
+        // Calcular la edad
+        $fecha_nac = new DateTime($fecha_nacimiento);
+        $hoy = new DateTime();
+        $edad = $hoy->diff($fecha_nac)->y;
+
+        // ID 2 es Cédula de Ciudadanía
+        if ($tipo_documento_id == 2 && $edad < 18) {
+            return [
+                'status' => 'error',
+                'message' => 'No se puede seleccionar Cédula de Ciudadanía para menores de edad'
+            ];
+        }
+
+        return true;
+    }
+
     public function crear($datos) {
+        // Validar edad y tipo de documento
+        $validacion = $this->validarEdadYDocumento($datos['fecha_nacimiento'], $datos['tipo_documento_id']);
+        if ($validacion !== true) {
+            return $validacion;
+        }
+
         return $this->modelo->crear($datos);
     }
 
@@ -28,6 +51,12 @@ class AprendizController {
                     'message' => "El campo $campo es requerido"
                 ];
             }
+        }
+
+        // Validar edad y tipo de documento
+        $validacion = $this->validarEdadYDocumento($datos['fecha_nacimiento'], $datos['tipo_documento_id']);
+        if ($validacion !== true) {
+            return $validacion;
         }
 
         return $this->modelo->actualizar($id, $datos);
