@@ -10,6 +10,7 @@ require_once 'database/conexion.php';
     <title>SENA || Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -28,7 +29,7 @@ require_once 'database/conexion.php';
                                 <th scope="col">No.</th>
                                 <th scope="col">Nombre Completo</th>
                                 <th scope="col">Edad</th>
-                                <th colspan="3" scope="col">Opciones</th>
+                                <th scope="col">Opciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,9 +72,11 @@ require_once 'database/conexion.php';
                                         echo "<th scope='row'>$contador</th>";
                                         echo "<td>$nombre</td>";
                                         echo "<td>$edad años</td>";
-                                        echo "<td><a href='view/aprendiz/ver.php?id=$id' class='btn btn-info btn-sm'>Ver</a></td>";
-                                        echo "<td><a href='view/aprendiz/editar.php?id=$id' class='btn btn-warning btn-sm'>Editar</a></td>";
-                                        echo "<td><a href='javascript:void(0)' onclick='eliminarAprendiz($id, \"$nombre\")' class='btn btn-danger btn-sm'>Eliminar</a></td>";
+                                        echo "<td><div class='d-flex gap-1 justify-content-center'>";
+                                        echo "<a href='view/aprendiz/ver.php?id=$id' class='btn btn-info btn-sm'><i class='fa-solid fa-eye'></i> Ver</a>";
+                                        echo "<a href='view/aprendiz/editar.php?id=$id' class='btn btn-warning btn-sm'><i class='fa-solid fa-rotate'></i> Editar</a>";
+                                        echo "<a href='javascript:void(0)' onclick='eliminarAprendiz($id, \"$nombre\")' class='btn btn-danger btn-sm'><i class='fa-solid fa-trash'></i> Eliminar</a>";
+                                        echo "</div></td>";
                                         echo "</tr>";
                                 
                                         $contador++;
