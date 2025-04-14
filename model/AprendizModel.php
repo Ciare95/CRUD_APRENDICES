@@ -10,9 +10,7 @@ class AprendizModel {
         $this->conexion = $db->conexion;
     }
 
-    /**
-     * Obtiene el persona_id de un aprendiz
-     */
+    
     private function obtener_id_usuario($id) {
         $sql = "SELECT persona_id FROM aprendices WHERE id = :id";
         $stmt = $this->conexion->prepare($sql);
@@ -167,7 +165,7 @@ class AprendizModel {
         try {
             $this->conexion->beginTransaction();
 
-            // Obtenemos el persona_id usando la función reutilizable
+            // Obtenemos el persona_id 
             $persona_id = $this->obtener_id_usuario($id);
 
             // Primero eliminamos el registro de la tabla aprendices
