@@ -36,6 +36,8 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SENA || Crear Aprendiz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-4">
@@ -46,7 +48,7 @@ try {
                         <h3 class="text-center">Crear Aprendiz</h3>
                     </div>
                     <div class="card-body">
-                        <form action="../../controller/AprendizController.php" method="POST" class="needs-validation" novalidate>
+                        <form id="formCrearAprendiz" action="../../controller/AprendizController.php" method="POST" onsubmit="return guardarAprendiz('formCrearAprendiz', false)" class="needs-validation" novalidate>
                             <input type="hidden" name="action" value="crear">
                             
                             <!-- Datos Personales -->
@@ -169,5 +171,9 @@ try {
             })
         })()
     </script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Nuestro archivo JavaScript -->
+    <script src="../../assets/js/aprendiz.js"></script>
 </body>
 </html>

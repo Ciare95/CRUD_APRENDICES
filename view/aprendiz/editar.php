@@ -33,6 +33,8 @@ function mostrarDato($valor) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Aprendiz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -44,7 +46,7 @@ function mostrarDato($valor) {
                         <h3 class="card-title mb-0">Editar Aprendiz</h3>
                     </div>
                     <div class="card-body">
-                        <form action="../../controller/AprendizController.php" method="POST" class="needs-validation" novalidate>
+                        <form id="formEditarAprendiz" action="../../controller/AprendizController.php" method="POST" onsubmit="return guardarAprendiz('formEditarAprendiz', true)" class="needs-validation" novalidate>
                             <input type="hidden" name="action" value="actualizar">
                             <input type="hidden" name="id" value="<?php echo $id; ?>">
 
@@ -178,6 +180,11 @@ function mostrarDato($valor) {
         })
     })()
     </script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Nuestro archivo JavaScript -->
+    <script src="../../assets/js/aprendiz.js"></script>
 </body>
 
 </html>

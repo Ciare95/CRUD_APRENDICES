@@ -51,6 +51,9 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) ||
     $controller = new AprendizController();
     $action = $_POST['action'] ?? $_GET['action'];
     
+    // Para respuestas JSON
+    header('Content-Type: application/json');
+    
     switch ($action) {
         case 'crear':
             // Validar campos requeridos
@@ -68,51 +71,48 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) ||
             }
 
             if (!empty($errores)) {
-                header('Location: ../view/aprendiz/crear.php?error=' . urlencode(implode(', ', $errores)));
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => implode(', ', $errores)
+                ]);
                 exit;
             }
 
             $resultado = $controller->crear($_POST);
-            
-            if ($resultado['status'] === 'success') {
-                header('Location: ../index.php?mensaje=creado');
-            } else {
-                header('Location: ../view/aprendiz/crear.php?error=' . urlencode($resultado['message']));
-            }
+            echo json_encode($resultado);
             break;
             
         case 'actualizar':
             if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
-                header('Location: ../index.php?error=id_invalido');
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'ID inválido'
+                ]);
                 exit;
             }
 
             $resultado = $controller->actualizar($_POST['id'], $_POST);
-            
-            if ($resultado['status'] === 'success') {
-                header('Location: ../index.php?mensaje=actualizado');
-            } else {
-                header('Location: ../view/aprendiz/editar.php?id=' . $_POST['id'] . '&error=' . urlencode($resultado['message']));
-            }
+            echo json_encode($resultado);
             break;
             
         case 'eliminar':
             if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-                header('Location: ../index.php?error=id_invalido');
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'ID inválido'
+                ]);
                 exit;
             }
 
             $resultado = $controller->eliminar($_GET['id']);
-            
-            if ($resultado['status'] === 'success') {
-                header('Location: ../index.php?mensaje=eliminado');
-            } else {
-                header('Location: ../index.php?error=' . urlencode($resultado['message']));
-            }
+            echo json_encode($resultado);
             break;
             
         default:
-            header('Location: ../index.php?error=accion_invalida');
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Acción inválida'
+            ]);
     }
     exit;
 } 

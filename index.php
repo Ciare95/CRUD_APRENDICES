@@ -9,6 +9,7 @@ require_once 'database/conexion.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SENA || Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -72,7 +73,7 @@ require_once 'database/conexion.php';
                                         echo "<td>$edad años</td>";
                                         echo "<td><a href='view/aprendiz/ver.php?id=$id' class='btn btn-info btn-sm'>Ver</a></td>";
                                         echo "<td><a href='view/aprendiz/editar.php?id=$id' class='btn btn-warning btn-sm'>Editar</a></td>";
-                                        echo "<td><a href='controller/AprendizController.php?action=eliminar&id=$id' class='btn btn-danger btn-sm'>Eliminar</a></td>";
+                                        echo "<td><a href='javascript:void(0)' onclick='eliminarAprendiz($id, \"$nombre\")' class='btn btn-danger btn-sm'>Eliminar</a></td>";
                                         echo "</tr>";
                                 
                                         $contador++;
@@ -91,6 +92,8 @@ require_once 'database/conexion.php';
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/js/aprendiz.js"></script>
 </body>
 
 </html>
